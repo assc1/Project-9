@@ -1,0 +1,55 @@
+Create an AWS EC2 server based on Ubuntu Server 20.04 LTS and name it "Jenkins
+install Jenkins
+sudo apt update
+sudo apt install default-jdk-headless
+wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
+sudo sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > \
+    /etc/apt/sources.list.d/jenkins.list'
+sudo apt update
+sudo apt-get install jenkins
+check jenkins status make sure its running
+sudo systemctl status jenkins
+create new inbound rule on the ec2 by opening  TCP port 8080
+initiate jenkins setup from browser
+http://3.15.225.249:8080
+retrieve password from the server. sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+enter password and save screenshot
+install suggested plug ins.
+ Configure Jenkins to retrieve source codes from GitHub using Webhooks by the following steps.
+ Enable webhooks in your GitHub repository settings
+ open repo-go setting-go to webhook-add webhook-input url and content type.
+ go to jenkings on the browser and create new job.
+ dashboard-new item-enter item name and select freestyle project and create job.
+ copy clone link code from githup repo. open new jenkins job. go to configure, scroll down to source code and paste url.
+ save configuration and run job/bulid now.
+ green sucessfull bulid indicate build was sucessful.
+ if buld is not sucessful, open console output and look through error and reconfigure job for a sucessful build.
+ the above configuration is a manual build and is triggered only when buils is statarted manually.
+ to authomate build we have to configure job;
+ configure job by adding build trigger: GitHub hook trigger GITScm pooling and Post-build Actions" to archive all the files
+ achieve artifacts by adding all files(**)
+ apply and save.
+ to test authomation, make any changes in repo and commit to master will authomate a new build.
+ click new build to view changes.
+ Configure Jenkins to copy files to NFS server via SSH
+ Install "Publish Over SSH" plugin
+  dashboard-Manage Jenkins-Available Manage Plugins-Publish Over SSH-install plug in.
+  Configure the job/project to copy artifacts over to NFS server.
+  dashboars-manage jenkins-Publish over SSH plugin
+  input private .pem key used to ssh into the server
+  enter private ip as hostname.
+  ec2-user as user name.
+  Remote directory – /mnt/apps
+  open TCP port 22 on the server(NFS server)
+  Hostname – can be private IP address
+  Test the configuration and make sure the connection returns Success. 
+  Save the configuration, open your Jenkins job/project configuration page and add another one "Post-build Action"
+  post buils action-send buils artifacts over ssh.
+  apply and save.
+  input ** for source file to copy all files and directories
+  apply and save.
+  make changes in  the repo like read me file and commit to master branch. changes and commit will immidiately triger new job and can be viewed on the jenkins job.
+  To make sure that the files in /mnt/apps have been udated – connect via SSH/Putty to your NFS server and check
+  cat into the read me file.
+  cat /mnt/apps/README.md
+
